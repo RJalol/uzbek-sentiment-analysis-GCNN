@@ -1,0 +1,2 @@
+1) ьmydatasets.py dagi
+class MR(TarDataset): kerak emas
