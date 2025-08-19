@@ -2,11 +2,16 @@ import os
 import argparse
 import datetime
 import torch
-import torchtext.data as data
+from torchtext.data import Field, TabularDataset, BucketIterator
+from torchtext.data.utils import get_tokenizer
+from torchtext.vocab import build_vocab_from_iterator
+from torch.utils.data import DataLoader
+
 from w2v import *
 
 from cnn_gate_aspect_model import CNN_Gate_Aspect_Text
 from cnn_gate_aspect_model_atsa import CNN_Gate_Aspect_Text as CNN_Gate_Aspect_Text_atsa
+from transformers import AutoTokenizer
 
 
 
@@ -15,7 +20,11 @@ from getsemeval import get_semeval, get_semeval_target, read_yelp
 import cnn_train
 
 parser = argparse.ArgumentParser(description='CNN text classificer')
+tokenizer = AutoTokenizer.from_pretrained("bert-base-uzbek")
 
+def uzbek_tokenizer(text):
+    # faqat tokenlar ro'yxatini qaytaradi
+    return tokenizer.tokenize(text)
 # learning
 parser.add_argument('-lr', type=float, default=0.01, help='initial learning rate [default: 0.001]')
 parser.add_argument('-l2', type=float, default=0, help='initial learning rate [default: 0]')
@@ -119,15 +128,16 @@ time_stamps_trials = []
 
 # load data
 print("Loading data...")
-text_field = data.Field(lower=True, tokenize='moses')
+text_field = Field(lower=True, tokenize='moses')
+
 
 if not args.aspect_phrase:
-    as_field = data.Field(sequential=False)
+    as_field = Field(sequential=False)
 else:
     print('phrase')
-    as_field = data.Field(lower=True, tokenize='moses')
+    as_field = Field(lower=True, tokenize='moses')
 
-sm_field = data.Field(sequential=False)
+sm_field = Field(sequential=False)
 years = [int(i) for i in args.years.split('_')]
 aspects = None
 if args.r_l == 'lap' and args.use_attribute:
