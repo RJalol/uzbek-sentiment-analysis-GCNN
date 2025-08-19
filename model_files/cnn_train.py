@@ -45,7 +45,7 @@ def train(train_iter, dev_iter, mixed_test_iter, model, args, text_field, aspect
                 if args.verbose == 1:
                     sys.stdout.write(
                         '\rBatch[{}] - loss: {:.6f}  acc: {:.4f}%({}/{})'.format(steps,
-                                                                                 loss.data[0],
+                                                                                 loss.item(),
                                                                                  accuracy,
                                                                                  corrects,
                                                                                  batch.batch_size))
@@ -88,12 +88,12 @@ def eval(data_iter, model, args):
 
         logit, pooling_input, relu_weights = model(feature, aspect)
         loss = F.cross_entropy(logit, target, size_average=False)
-        avg_loss += loss.data[0]
+        avg_loss += loss.item()
         corrects += (torch.max(logit, 1)
                      [1].view(target.size()).data == target.data).sum()
 
     size = len(data_iter.dataset)
-    avg_loss = loss.data[0]/size
+    avg_loss = loss.item()/size
     accuracy = 100.0 * corrects/size
     model.train()
     if args.verbose > 1:
