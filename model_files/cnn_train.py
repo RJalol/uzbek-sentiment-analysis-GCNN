@@ -5,10 +5,8 @@ import torch
 import torch.nn.functional as F
 import numpy as np
 
-
 def train(train_iter, dev_iter, mixed_test_iter, model, args, text_field, aspect_field, sm_field, predict_iter):
     time_stamps = []
-
     optimizer = torch.optim.Adagrad(
         model.parameters(),
         lr=args.lr,
@@ -18,17 +16,15 @@ def train(train_iter, dev_iter, mixed_test_iter, model, args, text_field, aspect
 
     steps = 0
     model.train()
-    start_time = time.time()
+    start_time = time.time()   # ⬅️ ish boshlanish vaqti
     dev_acc, mixed_acc = 0, 0
 
     for epoch in range(1, args.epochs + 1):
         for batch in train_iter:
             feature, aspect, target = batch.text, batch.aspect, batch.sentiment
 
-            # feature.t_() must be wrapped with no_grad
             with torch.no_grad():
                 feature = feature.t_()
-
             if len(feature) < 2:
                 continue
 
@@ -38,7 +34,7 @@ def train(train_iter, dev_iter, mixed_test_iter, model, args, text_field, aspect
 
             with torch.no_grad():
                 aspect = aspect.t_()
-                target = target.sub(1)  # batch first, index align
+                target = target.sub(1)
 
             if args.cuda:
                 feature, aspect, target = feature.cuda(), aspect.cuda(), target.cuda()
@@ -57,21 +53,11 @@ def train(train_iter, dev_iter, mixed_test_iter, model, args, text_field, aspect
                 if args.verbose == 1:
                     sys.stdout.write(
                         '\rBatch[{}] - loss: {:.6f}  acc: {:.4f}%({}/{})'.format(
-                            steps,
-                            loss.item(),
-                            accuracy,
-                            corrects,
-                            batch.batch_size
+                            steps, loss.item(), accuracy, corrects, batch.batch_size
                         )
                     )
 
-            if steps % args.save_interval == 0:
-                if not os.path.isdir(args.save_dir):
-                    os.makedirs(args.save_dir)
-                save_prefix = os.path.join(args.save_dir, 'snapshot')
-                save_path = '{}_steps{}.pt'.format(save_prefix, steps)
-                torch.save(model, save_path)
-
+        # Epoch tugaganda natija va vaqt
         if epoch == args.epochs:
             dev_acc, _, _ = eval(dev_iter, model, args)
             if mixed_test_iter:
@@ -79,11 +65,10 @@ def train(train_iter, dev_iter, mixed_test_iter, model, args, text_field, aspect
             else:
                 mixed_acc = 0.0
 
-            if args.verbose == 1:
-                delta_time = time.time() - start_time
-                print('\n{:.4f} - {:.4f} - {:.4f}'.format(dev_acc, mixed_acc, delta_time))
-                time_stamps.append((dev_acc, delta_time))
-                print()
+            delta_time = time.time() - start_time
+            print(f"\nEpoch {epoch} tugadi: Dev Acc={dev_acc:.2f}, Mixed Acc={mixed_acc:.2f}, Vaqt={delta_time:.2f} sec")
+            time_stamps.append((dev_acc, mixed_acc, delta_time))
+
     return (dev_acc, mixed_acc), time_stamps
 
 
@@ -97,14 +82,13 @@ def eval(data_iter, model, args):
 
         with torch.no_grad():
             feature = feature.t_()
-
         if not args.aspect_phrase:
             with torch.no_grad():
                 aspect = aspect.unsqueeze(0)
 
         with torch.no_grad():
             aspect = aspect.t_()
-            target = target.sub(1)  # batch first, index align
+            target = target.sub(1)
 
         if args.cuda:
             feature, aspect, target = feature.cuda(), aspect.cuda(), target.cuda()
@@ -115,11 +99,7 @@ def eval(data_iter, model, args):
         corrects += (torch.max(logit, 1)[1].view(target.size()) == target).sum()
 
     size = len(data_iter.dataset)
-    avg_loss = loss.item() / size
+    avg_loss = avg_loss / size
     accuracy = 100.0 * corrects / size
     model.train()
-
-    if args.verbose > 1:
-        print('\nEvaluation - loss: {:.6f}  acc: {:.4f}%({}/{})'.format(
-            avg_loss, accuracy, corrects, size))
     return accuracy, pooling_input, relu_weights

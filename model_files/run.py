@@ -3,6 +3,8 @@ import argparse
 import datetime
 import torch
 import torchtext.legacy.data as data
+from cnn_model import CNN_Basic
+from lstm_model import LSTM_Text
 
 from w2v import *
 
@@ -172,12 +174,13 @@ for t in range(n_trials):
     # model
 
     if args.model == 'CNN_Basic':
+        
         # vanilla CNN
         model = CNN_Basic(args)
         train = cnn_train
     elif args.model == 'LSTM':
         model = LSTM_Text(args)
-        train = lstm_train
+        train = cnn_train  
     elif args.model == 'CNN':
         # CAN
         model = CNN_Text(args)
@@ -240,6 +243,11 @@ for t in range(n_trials):
         acc, time_stamps = train.train(train_iter, test_iter, mixed_test_iter, model, args, text_field, as_field, sm_field, predict_iter)
         accuracy_trials.append([acc[0], acc[1]])   # accuracy on test, accuracy on mixed
         time_stamps_trials.append(time_stamps)
+        if time_stamps:  
+            dev_acc, delta_time = time_stamps   # oxirgi epochdagi qiymat
+            print(f"\nDev acc: {acc[0]:.2f} | Mixed acc: {acc[1]:.2f} | Time: {delta_time:.2f} sec")
+        else:
+            print(f"\nDev acc: {acc[0]:.2f} | Mixed acc: {acc[1]:.2f}")
 
 print(accuracy_trials)
 accuracy_trials = np.array(accuracy_trials)
