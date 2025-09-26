@@ -58,6 +58,7 @@ def train(train_iter, dev_iter, mixed_test_iter, model, args, text_field, aspect
                     )
 
         # Epoch tugaganda natija va vaqt
+ 
         if epoch == args.epochs:
             dev_acc, _, _ = eval(dev_iter, model, args)
             if mixed_test_iter:
@@ -65,8 +66,9 @@ def train(train_iter, dev_iter, mixed_test_iter, model, args, text_field, aspect
             else:
                 mixed_acc = 0.0
 
+            # Chop etishni olib tashlaymiz
             delta_time = time.time() - start_time
-            print(f"\nEpoch {epoch} tugadi: Dev Acc={dev_acc:.2f}, Mixed Acc={mixed_acc:.2f}, Vaqt={delta_time:.2f} sec")
+            # endi faqat natijani qaytaramiz
             time_stamps.append((dev_acc, mixed_acc, delta_time))
 
     return (dev_acc, mixed_acc), time_stamps

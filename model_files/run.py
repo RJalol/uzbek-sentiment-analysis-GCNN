@@ -240,15 +240,19 @@ for t in range(n_trials):
             print("\nSorry. The test dataset doesn't  exist.\n")
     else:
         print()
-        acc, time_stamps = train.train(train_iter, test_iter, mixed_test_iter, model, args, text_field, as_field, sm_field, predict_iter)
+        acc, time_stamps = train.train(
+            train_iter, test_iter, mixed_test_iter,
+            model, args, text_field, as_field, sm_field, predict_iter
+        )
         accuracy_trials.append([acc[0], acc[1]])   # accuracy on test, accuracy on mixed
         time_stamps_trials.append(time_stamps)
+
         if time_stamps:  
-            dev_acc, delta_time = time_stamps   # oxirgi epochdagi qiymat
-            print(f"\nDev acc: {acc[0]:.2f} | Mixed acc: {acc[1]:.2f} | Time: {delta_time:.2f} sec")
+            if len(time_stamps) > 0:
+                dev_acc, mixed_acc, delta_time = time_stamps[-1]   # ✅ 3 ta qiymat
+                print(f"\nEpoch {args.epochs} tugadi: Dev Acc={dev_acc:.2f}, Mixed Acc={mixed_acc:.2f}, Vaqt={delta_time:.2f} sec")
         else:
             print(f"\nDev acc: {acc[0]:.2f} | Mixed acc: {acc[1]:.2f}")
-
 print(accuracy_trials)
 accuracy_trials = np.array(accuracy_trials)
 means = accuracy_trials.mean(0)
@@ -258,9 +262,12 @@ print('{:.2f}    {:.2f}'.format(means[1], stds[1]))
 
 with open('time_stamps', 'w') as fopen:
     for trials in time_stamps_trials:
-        for acc, _ in trials:
-            fopen.write('{:.4f} '.format(acc))
+        # Dev va Mixed accuracy yozish
+        for dev_acc, mixed_acc, delta_time in trials:
+            fopen.write('{:.4f} {:.4f} '.format(dev_acc, mixed_acc))
         fopen.write('\n')
-        for _, dtime in trials:
-            fopen.write('{:.4f} '.format(dtime))
+
+        # Faqat vaqtlarni yozish
+        for dev_acc, mixed_acc, delta_time in trials:
+            fopen.write('{:.4f} '.format(delta_time))
         fopen.write('\n')
