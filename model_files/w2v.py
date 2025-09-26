@@ -19,7 +19,8 @@ def load_w2v_embedding(word_list, uniform_scale, dimension_size):
 
 def load_glove_embedding(word_list, uniform_scale, dimension_size):
     glove_words = []
-    with open(r'embedding\uzbek_glove_words.txt', 'r') as fopen:
+    with open(r'embedding\uzb\uzbek_glove_words.txt', 'r', encoding='utf-8') as fopen:
+
         for line in fopen:
             glove_words.append(line.strip())
     word2offset = {w: i for i, w in enumerate(glove_words)}

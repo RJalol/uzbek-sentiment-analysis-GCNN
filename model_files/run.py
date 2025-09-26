@@ -2,16 +2,12 @@ import os
 import argparse
 import datetime
 import torch
-from torchtext.data import Field, TabularDataset, BucketIterator
-from torchtext.data.utils import get_tokenizer
-from torchtext.vocab import build_vocab_from_iterator
-from torch.utils.data import DataLoader
+import torchtext.legacy.data as data
 
 from w2v import *
 
 from cnn_gate_aspect_model import CNN_Gate_Aspect_Text
 from cnn_gate_aspect_model_atsa import CNN_Gate_Aspect_Text as CNN_Gate_Aspect_Text_atsa
-from transformers import AutoTokenizer
 
 
 
@@ -20,11 +16,7 @@ from getsemeval import get_semeval, get_semeval_target, read_yelp
 import cnn_train
 
 parser = argparse.ArgumentParser(description='CNN text classificer')
-tokenizer = AutoTokenizer.from_pretrained("bert-base-uzbek")
 
-def uzbek_tokenizer(text):
-    # faqat tokenlar ro'yxatini qaytaradi
-    return tokenizer.tokenize(text)
 # learning
 parser.add_argument('-lr', type=float, default=0.01, help='initial learning rate [default: 0.001]')
 parser.add_argument('-l2', type=float, default=0, help='initial learning rate [default: 0]')
@@ -128,16 +120,15 @@ time_stamps_trials = []
 
 # load data
 print("Loading data...")
-text_field = Field(lower=True, tokenize='moses')
-
+text_field = data.Field(lower=True, tokenize='moses')
 
 if not args.aspect_phrase:
-    as_field = Field(sequential=False)
+    as_field = data.Field(sequential=False)
 else:
     print('phrase')
-    as_field = Field(lower=True, tokenize='moses')
+    as_field = data.Field(lower=True, tokenize='moses')
 
-sm_field = Field(sequential=False)
+sm_field = data.Field(sequential=False)
 years = [int(i) for i in args.years.split('_')]
 aspects = None
 if args.r_l == 'lap' and args.use_attribute:
@@ -152,7 +143,7 @@ print('# sentiments: {}'.format(len(sm_field.vocab.stoi)))
 args.embed_num = len(text_field.vocab)
 args.class_num = len(sm_field.vocab) - 1
 args.aspect_num = len(as_field.vocab)
-args.cuda = (not args.no_cuda) and torch.cuda.is_available(); del args.no_cuda
+args.cuda = False
 args.kernel_sizes = [int(k) for k in args.kernel_sizes.split(',')]
 args.save_dir = os.path.join(args.save_dir, datetime.datetime.now().strftime('%Y-%m-%d_%H-%M-%S'))
 
@@ -231,7 +222,8 @@ for t in range(n_trials):
         print('\nLoading model from {}...'.format(args.snapshot))
         model.load_state_dict(torch.load(args.snapshot))
 
-    model = model.cuda()
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    model = model.to(device)
 
     # train or predict
     if args.sentence is not None:
