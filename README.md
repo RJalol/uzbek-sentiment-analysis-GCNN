@@ -1,88 +1,76 @@
+Tushunarli ✅ Endi README’ni qisqa, senga kerakli formatda yozib berdim. Shunchaki asosiy qo‘llanish buyruqlari va fayl strukturasi ko‘rsatilgan:
+
+````markdown
 # 🇺🇿 Uzbek Sentiment Analysis with GCNN
 
-Bu loyiha **O‘zbek tili**da yozilgan matnlar uchun **Aspect-Based Sentiment Analysis (ABSA)** yechimini taqdim etadi.  
-Model asosida **Gated Convolutional Neural Network (GCNN)** arxitekturasi qo‘llangan.
+Aspect-Based Sentiment Analysis (ABSA) for Uzbek reviews.  
+Modelar: **CNN_Basic**, **LSTM**, **CNN_Gate_Aspect (GCNN)**.
 
 ---
 
-## 📌 Loyihaning asosiy maqsadi
+## ⚙️ O‘rnatish
 
-- Restoran, xizmat va boshqa domenlarga oid izohlarni **aspektlar bo‘yicha** tahlil qilish  
-- Har bir aniqlangan aspekt uchun **sentiment darajasini** (negative, neutral, positive, conflict) aniqlash  
-- O‘zbek tili uchun maxsus **embedding** va **dataset**lardan foydalanish
-
----
-
-
----
-
-## ⚙️ O‘rnatish (Installation)
-
-### 1. Virtual muhit yaratish
-
-
-python3 -m venv venv
-source venv/bin/activate      # Linux / macOS
-venv\Scripts\activate         # Windows
-Kerakli kutubxonalarni o‘rnatish
+```bash
+git clone https://github.com/RJalol/uzbek-sentiment-analysis-GCNN.git
+cd uzbek-sentiment-analysis-GCNN
 pip install -r requirements.txt
+````
 
+---
 
-👉 Batafsil: requirements.txt
+## 🚀 Modelni ishga tushirish
 
-Agar GPU mavjud bo‘lsa, PyTorchni NVIDIA CUDA bilan mos holda o‘rnatish tavsiya qilinadi:
-👉 https://pytorch.org/get-started/locally/
+### GCNN (CNN_Gate_Aspect)
 
-🚀 Modelni ishlatish
-1. Trening
-python uzabsa/train.py --config configs/config.yaml
+```bash
+python -m run -lr 1e-2 -batch-size 32 -verbose 1 \
+  -model CNN_Gate_Aspect -embed_file glove -r_l r -epochs 13
+```
 
-2. Baholash (Evaluation)
-python uzabsa/evaluate.py \
-  --model_path model_files/best_model.pth \
-  --test_data data/test.csv
+### CNN_Basic
 
-3. Inference (yangi matnda sinash)
-python uzabsa/predict.py \
-  --model_path model_files/best_model.pth \
-  --input "Restorandagi xizmat juda yaxshi edi"
+```bash
+python -m run -lr 1e-2 -batch-size 32 -verbose 1 \
+  -model CNN_Basic -embed_file glove -r_l r -epochs 13
+```
 
+### LSTM
 
-👉 Natija:
+```bash
+python -m run -lr 1e-2 -batch-size 32 -verbose 1 \
+  -model LSTM -embed_file glove -r_l r -epochs 13
+```
 
-{
-  "aspect": "xizmat",
-  "sentiment": "positive"
-}
+---
 
-📊 Metodik yondashuv
+## 📦 `requirements.txt`
 
-Embedding — so‘z vektorlari (FastText yoki Word2Vec Uzbek)
+```txt
+torch>=2.0.0
+torchvision>=0.15.0
+torchtext>=0.15.0
+numpy>=1.23
+pandas>=1.5
+scikit-learn>=1.2
+tqdm>=4.65
+PyYAML>=6.0
+transformers>=4.30
+nltk>=3.8
+spacy>=3.5
+matplotlib>=3.7
+seaborn>=0.12
+```
 
-GCNN — Gated Convolutional Neural Network yordamida aspektni kontekstdan ajratish
+---
 
-Sentiment klassifikatsiya — 4 sinf:
+## 👤 Muallif
 
-0 : Negative
+**Jaloliddin Shamsiddin o‘g‘li Rajabov (RJalol)**
+📧 [jaloliddin.rajabov@gmail.com](mailto:jaloliddin.rajabov@gmail.com)
+💬 [@Jaloliddin_Shamsuddinovich](https://t.me/Jaloliddin_Shamsuddinovich)
+🔗 [GitHub/RJalol](https://github.com/RJalol)
 
-1 : Neutral
+```
 
-2 : Positive
+---
 
-3 : Conflict
-
-🧑‍💻 Muallif
-
-Jaloliddin Shamsiddin o‘g‘li Rajabov (RJalol)
-PhD candidate — Mirzo Ulug‘bek National University of Uzbekistan
-
-📧 Email: jaloliddin.rajabov@gmail.com
-
-💬 Telegram: @Jaloliddin_Shamsuddinovich
-
-🔗 GitHub: RJalol
-
-📜 Litsenziya
-
-Ushbu loyiha ilmiy va ta’limiy maqsadlarda foydalanish uchun ochiq.
-Tijoriy foydalanish uchun muallif bilan bog‘laning.
