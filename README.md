@@ -16,17 +16,29 @@ Model asosida **Gated Convolutional Neural Network (GCNN)** arxitekturasi qo‘l
 ## 📂 Papkalar tuzilishi
 
 ├── embedding/ # So‘z vektorlari (FastText / Word2Vec)
+
 ├── model_files/ # Saqlangan model fayllari (.pt, .pth)
+
 ├── output/ # Trening / test natijalari
+
 ├── uzabsa/ # Asosiy kod: model, train, evaluate, utils
+
 │ ├── train.py
+
 │ ├── evaluate.py
+
 │ ├── predict.py
+
 │ └── ...
+
 ├── absa_uzbek.csv # ABSA ma’lumotlar (CSV format)
+
 ├── absa_uzbek.json # ABSA ma’lumotlar (JSON format)
+
 ├── uz_getsemeval.ipynb # Notebook — eksperimentlar va vizualizatsiya
+
 ├── requirements.txt # Kerakli kutubxonalar ro‘yxati
+
 └── README.md 
 
 ---
