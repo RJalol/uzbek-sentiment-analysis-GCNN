@@ -61,7 +61,6 @@ matplotlib>=3.7
 seaborn>=0.12
 ```
 
----
 
 ## 👤 Muallif
 
@@ -70,5 +69,4 @@ seaborn>=0.12
 💬 [@Jaloliddin_Shamsuddinovich](https://t.me/Jaloliddin_Shamsuddinovich)
 🔗 [GitHub/RJalol](https://github.com/RJalol)
 
-```
 
