@@ -1,4 +1,3 @@
-Tushunarli ✅ Endi README’ni qisqa, senga kerakli formatda yozib berdim. Shunchaki asosiy qo‘llanish buyruqlari va fayl strukturasi ko‘rsatilgan:
 
 ````markdown
 # 🇺🇿 Uzbek Sentiment Analysis with GCNN
@@ -68,5 +67,8 @@ seaborn>=0.12
 📧 [jaloliddin.rajabov@gmail.com](mailto:jaloliddin.rajabov@gmail.com)
 💬 [@Jaloliddin_Shamsuddinovich](https://t.me/Jaloliddin_Shamsuddinovich)
 🔗 [GitHub/RJalol](https://github.com/RJalol)
+📜 Litsenziya
 
+Ushbu loyiha ilmiy va ta’limiy maqsadlarda foydalanish uchun ochiq.
+Tijoriy foydalanish uchun muallif bilan bog‘laning.
 
